@@ -317,8 +317,5 @@ publish_button = tk.CTkButton(top_frame, text="Publish", fg_color="darkgreen", h
 exit_button = tk.CTkButton(top_frame, text="Exit", fg_color="darkred", hover_color="red", command=exit)
 exit_button.pack(side=tk.RIGHT, padx=10, pady=10)
 
-# Close on keyboard interrupt
-root.bind("<Control-c>", exit)
-
 # Main loop
 root.mainloop()
