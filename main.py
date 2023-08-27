@@ -1,6 +1,5 @@
 import customtkinter as tk
 import datetime
-import os
 
 button_info = []
 button_instances = []
@@ -56,20 +55,25 @@ def remove_button(name):
     for event in button_info:
         if event["name"] == name:
             button_info.remove(event)
+            break
     for button in button_instances:
         if button.cget("text") == name:
             button_instances.remove(button)
             button.destroy()
+            break
 
 
 def organize_buttons():
     global button_instances
     global button_info
-    print(str(button_instances) + "\n\n" + str(button_info))
+    sorted_info = sorted(button_info, key=lambda k: k["time"])
+    remove_queue = []
     for button in button_info:
-        remove_button(button["name"])
+        remove_queue.append(button["name"])
+    for item in remove_queue:
+        remove_button(item)
     button_instances = []
-    for event in button_info:
+    for event in sorted_info:
         add_button(event["name"], event["description"], event["time"], event["type"])
 
 
@@ -89,7 +93,7 @@ def add_event():
                 return
     if event_description_box.get(1.0, tk.END) == "\n" or event_description_box.get(1.0,
                                                                                    tk.END) == "Event Description Required\n" or event_description_box.get(
-            1.0, tk.END) == "Event Description Required" or event_description_box.get(1.0, tk.END) == "":
+        1.0, tk.END) == "Event Description Required" or event_description_box.get(1.0, tk.END) == "":
         event_description_box.delete(1.0, tk.END)
         event_description_box.insert(1.0, "Event Description Required")
         return
@@ -103,9 +107,9 @@ def add_event():
         try:
             if len(event_time_override_box.get()) == 8 and event_time_override_box.get()[2] == ":" and \
                     event_time_override_box.get()[5] == ":" and int(event_time_override_box.get()[0:2]) < 24 and int(
-                    event_time_override_box.get()[3:5]) < 60 and int(event_time_override_box.get()[6:8]) < 60 and int(
-                    event_time_override_box.get()[0:2]) >= 0 and int(event_time_override_box.get()[3:5]) >= 0 and int(
-                    event_time_override_box.get()[6:8]) >= 0:
+                event_time_override_box.get()[3:5]) < 60 and int(event_time_override_box.get()[6:8]) < 60 and int(
+                event_time_override_box.get()[0:2]) >= 0 and int(event_time_override_box.get()[3:5]) >= 0 and int(
+                event_time_override_box.get()[6:8]) >= 0:
                 eventTime = event_time_override_box.get()
                 print(f"Using user defined time: {eventTime}")
             else:
@@ -148,7 +152,7 @@ title_box = tk.CTkEntry(top_frame, placeholder_text="Doc Title")
 def debug_button_callback():
     # Add 4 numbered events
     for i in range(4):
-        add_button(f"Event {i + 1}", f"Event {i + 1} description", datetime.datetime.now().strftime("%H:%M:%S"),
+        add_button(f"Event {i + 1}", f"Event {i + 1} description", f"0{i+1}:00:00",
                    "Debug")
     print(f"button_info: {button_info}\nbutton_instances: {button_instances}")
 
@@ -206,8 +210,6 @@ def edit_event(name):
 
 
 def new_event():
-    # Add event entry to the grid
-
     eventTime = datetime.datetime.now().strftime("%H:%M")
 
     # Remove the New Event button
@@ -234,29 +236,17 @@ new_event_button = tk.CTkButton(bottom_left_frame, text="New Event", fg_color="d
 
 # New Doc button callback
 def new_doc():
+    global button_instances
+    global button_info
+    for button in button_instances:
+        button.destroy()
+        button_instances.remove(button)
+    button_instances = []
+    button_info = []
+
     title_box.pack(side=tk.LEFT, padx=10, pady=10)
     publish_button.pack(side=tk.LEFT, padx=10, pady=10)
     new_event_button.grid(row=0, column=0, padx=10, pady=10)
-
-
-# Exit button callback
-def exit(event=None, type=None):
-    try:
-        root.destroy()
-        print("Exiting with code 0, no errors.")
-        os._exit(0)
-        print("Exiting has encountered an unknown error. Exiting with code 1.")
-        os._exit(1)
-    except KeyboardInterrupt:
-        print("Exiting with code 0, no errors. (Ctrl+C)")
-        os._exit(0)
-    except SystemExit:
-        print("Exiting with code 0, no errors. (SystemExit)")
-        os._exit(0)
-    except Exception as e:
-        print(f"Exiting has encountered an unknown error. Exiting with code 1.\nError: {e}")
-        os._exit(1)
-
 
 # Publish button callback
 def publish():
@@ -269,42 +259,51 @@ def publish():
     if not button_info:
         title_box.delete(0, tk.END)
         title_box.insert(0, "No Events")
-    # Create an embed with all the events
-    webhook = ""
-    import requests
-    # Create the embed data
-    embed = {
-        "title": title_box.get(),
-        "description": "MyNewt Minutes, manual entry",
-        "color": 0x0000ff,  # Blue
-        # Generate fields from the button_info list
-        "fields": [
-            {
-                "name": event["time"] + " - " + event["type"],
-                "value": "Name: " + event["name"] + "\n" + event["description"],
-                "inline": False
-            } for event in button_info
-        ],
-        "footer": {
-            "text": "MyNewt Minutes"
+
+    publish_window = tk.CTk()
+    def push():
+        # Create an embed with all the events
+        webhook = webhook_entry.get()
+        import requests
+        # Create the embed data
+        embed = {
+            "title": title_box.get(),
+            "description": "MyNewt Minutes, manual entry",
+            "color": 0x0000ff,  # Blue
+            # Generate fields from the button_info list
+            "fields": [
+                {
+                    "name": event["time"] + " - " + event["type"],
+                    "value": "Name: " + event["name"] + "\n" + event["description"],
+                    "inline": False
+                } for event in button_info
+            ],
+            "footer": {
+                "text": "MyNewt Minutes"
+            }
         }
-    }
 
-    # Create the payload data
-    payload = {
-        "embeds": [embed]
-    }
+        # Create the payload data
+        payload = {
+            "embeds": [embed]
+        }
 
-    # Make the POST request to the webhook URL with the payload data
-    webhook = input("Webhook URL: ")
-    response = requests.post(webhook, json=payload)
+        # Make the POST request to the webhook URL with the payload data
+        response = requests.post(webhook, json=payload)
 
-    # Check the response status code
-    if response.status_code == 204:
-        print("Webhook sent successfully.")
-    else:
-        print(f"Webhook failed with status code {response.status_code}.")
+        # Check the response status code
+        if response.status_code == 204:
+            print("Webhook sent successfully.")
+        else:
+            print(f"Webhook failed with status code {response.status_code}.")
+        publish_window.destroy()
+    publish_window.geometry("200x100")
+    webhook_entry = tk.CTkEntry(publish_window, placeholder_text="Webhook")
+    webhook_entry.pack(padx=10, pady=10)
+    push_button = tk.CTkButton(publish_window, text="Push!", command=push)
+    push_button.pack(padx=10, pady=10)
 
+    publish_window.mainloop()
 
 # Create a "New" button in the top frame
 new_button = tk.CTkButton(top_frame, text="New Doc", fg_color="darkgray", hover_color="lightgray", command=new_doc)
@@ -313,9 +312,8 @@ new_button.pack(side=tk.LEFT, padx=10, pady=10)
 # Create a "Publish" button in the top frame
 publish_button = tk.CTkButton(top_frame, text="Publish", fg_color="darkgreen", hover_color="green", command=publish)
 
-# Create an "Exit" button in the top frame
-exit_button = tk.CTkButton(top_frame, text="Exit", fg_color="darkred", hover_color="red", command=exit)
-exit_button.pack(side=tk.RIGHT, padx=10, pady=10)
+# Close on keyboard interrupt
+root.bind("<Control-c>", exit)
 
 # Main loop
 root.mainloop()
