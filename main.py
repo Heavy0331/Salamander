@@ -312,8 +312,5 @@ new_button.pack(side=tk.LEFT, padx=10, pady=10)
 # Create a "Publish" button in the top frame
 publish_button = tk.CTkButton(top_frame, text="Publish", fg_color="darkgreen", hover_color="green", command=publish)
 
-# Close on keyboard interrupt
-root.bind("<Control-c>", exit)
-
 # Main loop
 root.mainloop()
