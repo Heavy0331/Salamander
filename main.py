@@ -3,6 +3,7 @@ import datetime
 
 button_info = []
 button_instances = []
+allow_debug = False  # Not to be allowed in production
 debug = False
 
 root = tk.CTk()
@@ -12,13 +13,17 @@ root.configure(bg="gray")
 
 
 def change_debug(_):
-    global debug
-    debug = not debug
-    print(f"Debug mode has been" + (" enabled." if debug else " disabled."))
-    if debug:
-        debug_button.pack(side=tk.LEFT, padx=10, pady=10)
+    global allow_debug
+    if allow_debug:
+        global debug
+        debug = not debug
+        print(f"Debug mode has been" + (" enabled." if debug else " disabled."))
+        if debug:
+            debug_button.pack(side=tk.LEFT, padx=10, pady=10)
+        else:
+            debug_button.pack_forget()
     else:
-        debug_button.pack_forget()
+        print("Debug mode is disallowed in production environments.")
 
 
 # Bind ctrl+d to debug mode
