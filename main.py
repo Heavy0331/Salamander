@@ -41,12 +41,12 @@ bottom_right_frame = tk.CTkFrame(root, width=400, height=690)
 bottom_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=False)
 
 
-def add_button(name, description, time, type):
+def add_button(name, description, time, event_type):
     button_info.append({
         "name": name,
         "description": description,
         "time": time,
-        "type": type
+        "type": event_type
     })
     button = tk.CTkButton(bottom_right_frame, text=name, fg_color="darkgray", hover_color="lightgray", width=50,
                           height=30, command=lambda event_name=name: edit_event(event_name))
@@ -275,6 +275,7 @@ def publish():
     if not button_info:
         title_box.delete(0, tk.END)
         title_box.insert(0, "No Events")
+        return
 
     publish_window = tk.CTk()
 
