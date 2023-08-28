@@ -18,28 +18,26 @@ Salamander is a program designed to help you create and manage minutes of a meet
 1. Clone the repository:
 
    ```sh
-   git clone https://github.com/your-username/MyNewt-Minutes.git
-   cd MyNewt-Minutes
+   git clone https://github.com/Heavy0331/Salamander.git
+   cd Salamander
+   
+2. Install the required dependencies:
 
-    Install the required dependencies:
-
-    sh
-
-    pip install -r requirements.txt
+   ```sh
+   pip install -r requirements.txt
 
 ## Usage
 
-    Run the program:
-
-    sh
+Run the program:
 
     python main.py
 
-    The program's GUI window will open. You can perform the following actions:
-        Add a new event: Click the "New Event" button, fill in the event details, and click "Add Event."
-        Edit an event: Click an existing event button to edit its details.
-        Organize events: Click the "Debug" button to add sample events for testing.
-        Publish minutes: Click the "Publish" button to send the minutes to a webhook.
+    
+   The program's GUI window will open. You can perform the following actions:
+   - Add a new event: Click the "New Event" button, fill in the event details, and click "Add Event."
+   - Edit an event: Click an existing event button to edit its details.
+   - Publish minutes: Click the "Publish" button to send the minutes to a webhook. (Discord only)
+        
 
 ## Contributing
 
