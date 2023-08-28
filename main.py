@@ -3,7 +3,7 @@ import datetime
 
 button_info = []
 button_instances = []
-allow_debug = False  # Not to be allowed in production
+allow_debug = True  # Not to be allowed in production
 debug = False
 
 root = tk.CTk()
@@ -243,15 +243,24 @@ new_event_button = tk.CTkButton(bottom_left_frame, text="New Event", fg_color="d
 def new_doc():
     global button_instances
     global button_info
+    if title_box.get() == "":
+        pass
+    else:
+        title_box.delete(0, tk.END)
     for button in button_instances:
         button.destroy()
-        button_instances.remove(button)
     button_instances = []
     button_info = []
-
+    event_name_box.grid_forget()
+    event_description_label.grid_forget()
+    event_description_box.grid_forget()
+    event_time_override_box.grid_forget()
+    event_type_dropdown.grid_forget()
+    add_event_button.grid_forget()
     title_box.pack(side=tk.LEFT, padx=10, pady=10)
     publish_button.pack(side=tk.LEFT, padx=10, pady=10)
     new_event_button.grid(row=0, column=0, padx=10, pady=10)
+
 
 # Publish button callback
 def publish():
