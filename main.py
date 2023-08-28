@@ -7,9 +7,8 @@ allow_debug = False  # Not to be allowed in production
 debug = False
 
 root = tk.CTk()
-root.title("MyNewt Minutes")
+root.title("Salamander")
 root.geometry("800x600")
-root.configure(bg="gray")
 
 
 def change_debug(_):
@@ -41,15 +40,15 @@ bottom_right_frame = tk.CTkFrame(root, width=400, height=690)
 bottom_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=False)
 
 
-def add_button(name, description, time, type):
+def add_button(name, description, time, event_type):
     button_info.append({
         "name": name,
         "description": description,
         "time": time,
-        "type": type
+        "type": event_type
     })
     button = tk.CTkButton(bottom_right_frame, text=name, fg_color="darkgray", hover_color="lightgray", width=50,
-                          height=30, command=lambda name=name: edit_event(name))
+                          height=30, command=lambda event_name=name: edit_event(event_name))
     button.pack(side=tk.TOP, padx=10, pady=10)
     button_instances.append(button)
 
@@ -90,15 +89,17 @@ def add_event():
         return
     if event_name_box.get() == "Event Name Required" or event_name_box.get() == "Event Name Already Exists":
         return
-    if button_info != []:
+    if button_info:
         for event in button_info:
             if event_name_box.get() == event["name"]:
                 event_name_box.delete(0, tk.END)
                 event_name_box.insert(0, "Event Name Already Exists")
                 return
-    if event_description_box.get(1.0, tk.END) == "\n" or event_description_box.get(1.0,
-                                                                                   tk.END) == "Event Description Required\n" or event_description_box.get(
-        1.0, tk.END) == "Event Description Required" or event_description_box.get(1.0, tk.END) == "":
+    if (event_description_box.get(1.0, tk.END) == "\n" or event_description_box.get(1.0,
+                                                                                    tk.END) == ("Event Description "
+                                                                                                "Required\n") or
+            event_description_box.get(
+                1.0, tk.END) == "Event Description Required" or event_description_box.get(1.0, tk.END) == ""):
         event_description_box.delete(1.0, tk.END)
         event_description_box.insert(1.0, "Event Description Required")
         return
@@ -106,17 +107,17 @@ def add_event():
         event_type_dropdown.set("Event Type Required")
         return
     if event_time_override_box.get() == "":
-        eventTime = datetime.datetime.now().strftime("%H:%M:%S")
-        print(f"Using current time: {eventTime}")
+        event_time = datetime.datetime.now().strftime("%H:%M:%S")
+        print(f"Using current time: {event_time}")
     else:
         try:
             if len(event_time_override_box.get()) == 8 and event_time_override_box.get()[2] == ":" and \
                     event_time_override_box.get()[5] == ":" and int(event_time_override_box.get()[0:2]) < 24 and int(
                 event_time_override_box.get()[3:5]) < 60 and int(event_time_override_box.get()[6:8]) < 60 and int(
                 event_time_override_box.get()[0:2]) >= 0 and int(event_time_override_box.get()[3:5]) >= 0 and int(
-                event_time_override_box.get()[6:8]) >= 0:
-                eventTime = event_time_override_box.get()
-                print(f"Using user defined time: {eventTime}")
+                    event_time_override_box.get()[6:8]) >= 0:
+                event_time = event_time_override_box.get()
+                print(f"Using user defined time: {event_time}")
             else:
                 event_time_override_box.delete(0, tk.END)
                 event_time_override_box.insert(0, "Invalid time format. Use 24hr format (HH:MM:SS)")
@@ -131,8 +132,10 @@ def add_event():
             return
 
     print(
-        f"New Event button pressed\nEvent: {event_name_box.get()}\nDescription: {event_description_box.get(1.0, tk.END)}\nTime: {eventTime}")
-    add_button(event_name_box.get(), event_description_box.get(1.0, tk.END), eventTime, event_type_dropdown.get())
+        f"New Event button pressed\nEvent: {event_name_box.get()}\n"
+        f"Description: {event_description_box.get(1.0, tk.END)}"
+        f"\nTime: {event_time}")
+    add_button(event_name_box.get(), event_description_box.get(1.0, tk.END), event_time, event_type_dropdown.get())
 
     event_name_box.delete(0, tk.END)
     event_description_box.delete(1.0, tk.END)
@@ -157,7 +160,7 @@ title_box = tk.CTkEntry(top_frame, placeholder_text="Doc Title")
 def debug_button_callback():
     # Add 4 numbered events
     for i in range(4):
-        add_button(f"Event {i + 1}", f"Event {i + 1} description", f"0{i+1}:00:00",
+        add_button(f"Event {i + 1}", f"Event {i + 1} description", f"0{i + 1}:00:00",
                    "Debug")
     print(f"button_info: {button_info}\nbutton_instances: {button_instances}")
 
@@ -173,7 +176,7 @@ add_event_button = tk.CTkButton(bottom_left_frame, text="Add Event", fg_color="d
 event_name_box = tk.CTkEntry(bottom_left_frame, width=300, height=30, placeholder_text="Event Name")
 
 # Event Type dropdown menu
-event_type_options = ["Attendence", "Discussion", "Question", "Decision", "Action Item", "Other"]
+event_type_options = ["Attendance", "Discussion", "Question", "Decision", "Action Item", "Other"]
 event_type_dropdown = tk.CTkOptionMenu(bottom_left_frame, values=event_type_options)
 event_type_dropdown.configure(width=300, height=30)
 event_type_dropdown.set("Event Type")
@@ -215,8 +218,6 @@ def edit_event(name):
 
 
 def new_event():
-    eventTime = datetime.datetime.now().strftime("%H:%M")
-
     # Remove the New Event button
     new_event_button.grid_forget()
 
@@ -243,15 +244,24 @@ new_event_button = tk.CTkButton(bottom_left_frame, text="New Event", fg_color="d
 def new_doc():
     global button_instances
     global button_info
+    if title_box.get() == "":
+        pass
+    else:
+        title_box.delete(0, tk.END)
     for button in button_instances:
         button.destroy()
-        button_instances.remove(button)
     button_instances = []
     button_info = []
-
+    event_name_box.grid_forget()
+    event_description_label.grid_forget()
+    event_description_box.grid_forget()
+    event_time_override_box.grid_forget()
+    event_type_dropdown.grid_forget()
+    add_event_button.grid_forget()
     title_box.pack(side=tk.LEFT, padx=10, pady=10)
     publish_button.pack(side=tk.LEFT, padx=10, pady=10)
     new_event_button.grid(row=0, column=0, padx=10, pady=10)
+
 
 # Publish button callback
 def publish():
@@ -264,8 +274,10 @@ def publish():
     if not button_info:
         title_box.delete(0, tk.END)
         title_box.insert(0, "No Events")
+        return
 
     publish_window = tk.CTk()
+
     def push():
         # Create an embed with all the events
         webhook = webhook_entry.get()
@@ -302,6 +314,7 @@ def publish():
         else:
             print(f"Webhook failed with status code {response.status_code}.")
         publish_window.destroy()
+
     publish_window.geometry("200x100")
     webhook_entry = tk.CTkEntry(publish_window, placeholder_text="Webhook")
     webhook_entry.pack(padx=10, pady=10)
@@ -310,8 +323,9 @@ def publish():
 
     publish_window.mainloop()
 
-# Create a "New" button in the top frame
-new_button = tk.CTkButton(top_frame, text="New Doc", fg_color="darkgray", hover_color="lightgray", command=new_doc)
+
+# Create a "New Doc" button in the top frame
+new_button = tk.CTkButton(top_frame, text="New Doc", fg_color="gray", hover_color="lightgray", command=new_doc)
 new_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 # Create a "Publish" button in the top frame
