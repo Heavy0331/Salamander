@@ -3,7 +3,7 @@ import datetime
 
 button_info = []
 button_instances = []
-allow_debug = True  # Not to be allowed in production
+allow_debug = False  # Not to be allowed in production
 debug = False
 
 root = tk.CTk()
