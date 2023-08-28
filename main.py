@@ -7,9 +7,8 @@ allow_debug = False  # Not to be allowed in production
 debug = False
 
 root = tk.CTk()
-root.title("MyNewt Minutes")
+root.title("Salamander")
 root.geometry("800x600")
-root.configure(bg="gray")
 
 
 def change_debug(_):
@@ -325,8 +324,8 @@ def publish():
     publish_window.mainloop()
 
 
-# Create a "New" button in the top frame
-new_button = tk.CTkButton(top_frame, text="New Doc", fg_color="darkgray", hover_color="lightgray", command=new_doc)
+# Create a "New Doc" button in the top frame
+new_button = tk.CTkButton(top_frame, text="New Doc", fg_color="gray", hover_color="lightgray", command=new_doc)
 new_button.pack(side=tk.LEFT, padx=10, pady=10)
 
 # Create a "Publish" button in the top frame
