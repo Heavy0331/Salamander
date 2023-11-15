@@ -32,11 +32,11 @@ top_frame = tk.CTkFrame(root, width=800, height=110, fg_color="white")
 top_frame.pack(side=tk.TOP, fill=tk.BOTH, expand=False)
 
 # Create a frame for the bottom left of the window
-bottom_left_frame = tk.CTkFrame(root, width=400, height=690)
+bottom_left_frame = tk.CTkFrame(root, width=650, height=690)
 bottom_left_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=False)
 
 # Create a frame for the bottom right of the window
-bottom_right_frame = tk.CTkFrame(root, width=400, height=690)
+bottom_right_frame = tk.CTkScrollableFrame(root, width=150, height=690)
 bottom_right_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=False)
 
 
